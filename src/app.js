@@ -7,7 +7,7 @@ app.use('/hello', (req, res) => {
 	res.send('Test');
 });
 
-// Make API enpoint
+// Order of endpoint routes is important - putting empty / in the last makes the pervious routes working
 app.use('/', (req, res) => {
 	res.send('Hello from the server!');
 });
