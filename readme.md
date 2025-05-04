@@ -1,2 +1,3 @@
 -   Install Express
 -   Install Nodemon
+-   Postman for testing API endpoints
