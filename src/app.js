@@ -1,28 +1,26 @@
 const express = require('express');
-const { adminAuth, userAuth } = require('./middlewares/auth');
 
 const app = express();
 
-// Check Admin auth by using use method for all type of HTTP methods before proceeding to the next request handlers of the same route.
-app.use('/admin', adminAuth);
-
-app.get('/admin/getAllData', (req, res) => {
-	res.send('All Data sent');
+app.post('/admin', (req, res) => {
+	// Some other logic
+	res.send('Admin data sent!');
 });
 
-app.get('/admin/delete/:userId', (req, res) => {
-	const userId = req.params.userId;
-	res.send(`User with the id ${userId} is deleted!`);
-});
-
-// Another way of using middleware by putting directly in the request handler
-app.get('/user', userAuth, (req, res) => {
-	res.send('User data sent!');
-});
-
-// Here user is not required at the time of user login obviously. So userAuth middleware is not used in the request handler.
 app.post('/user/login', (req, res) => {
-	res.send('User is logged in successfully!');
+	try {
+		res.send('User is logged in successfully!');
+	} catch (err) {
+		res.status(500).send('User is not logged in. Something went wrong!');
+	}
+});
+
+// This middleware in last of the code will work as safe guard of any kind of error that might not be handled properly anywhere in the code.
+// For example in the /admin request handler the error is not handled if may occur, because the code is not written in try catch block.
+app.use('/', (err, req, res, next) => {
+	if (err) {
+		res.status(500).send('Something went wrong!');
+	}
 });
 
 app.listen(3000, () => {
