@@ -1,61 +1,28 @@
 const express = require('express');
+const { adminAuth, userAuth } = require('./middlewares/auth');
 
 const app = express();
 
-/**
- * Routes pattern
- *
- * The ? makes anything after it optional
- * The + allows repeating anything which is followed by it
- * The * allows anything random in between in place of it
- * The () makes optional which is in between it
- * RegEx is also allowed instead of plain string values as route
- */
+// Check Admin auth by using use method for all type of HTTP methods before proceeding to the next request handlers of the same route.
+app.use('/admin', adminAuth);
 
-// Here, /ab, /abc both will work
-// app.get('/ab?c', (req, res) => {
-// 	res.send({ name: 'Deepak' });
-// });
-
-// Here, repeating b is allowed, /abbbbbbbc, /abc both will work
-// app.get('/ab+c', (req, res) => {
-// 	res.send({ name: 'Deepak' });
-// });
-
-// Here, /abcd, /abXYZcd both will work
-// app.get('/ab*cd', (req, res) => {
-// 	res.send({ name: 'Deepak' });
-// });
-
-// Here, /ad, /abcd both will work, because bc is optional in the route
-// app.get('/a(bc)d', (req, res) => {
-// 	res.send({ name: 'Deepak' });
-// });
-
-// Here, bc is optional as well as repeatable, /ad, /abcd, /abcbcbcd all will work
-// app.get('/a(bc)+d', (req, res) => {
-// 	res.send({ name: 'Deepak' });
-// });
-
-/**
- * Route query params and dynamic routes
- */
-
-// The query params are passed using, ?key=val&key=val pattern. Here & is used for more than 1 query param
-// Example: /user?userId=101&pwd=test
-app.get('/user', (req, res) => {
-	// Accessing the query params for the specific route
-	console.log(req.query);
-	res.send({ name: 'Deepak' });
+app.get('/admin/getAllData', (req, res) => {
+	res.send('All Data sent');
 });
 
-// The dynamic routes are used like this, /user/101/Deepak/xyz pattern.
-// Here every dynamic route value will be captured by the defined key in the route
-app.get('/user/:userId/:name/:pwd', (req, res) => {
-	// Accessing dynamic route values for the specific route
-	console.log(req.params);
-	console.log(req.query);
-	res.send({ name: 'Deepak' });
+app.get('/admin/delete/:userId', (req, res) => {
+	const userId = req.params.userId;
+	res.send(`User with the id ${userId} is deleted!`);
+});
+
+// Another way of using middleware by putting directly in the request handler
+app.get('/user', userAuth, (req, res) => {
+	res.send('User data sent!');
+});
+
+// Here user is not required at the time of user login obviously. So userAuth middleware is not used in the request handler.
+app.post('/user/login', (req, res) => {
+	res.send('User is logged in successfully!');
 });
 
 app.listen(3000, () => {
