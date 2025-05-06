@@ -1,13 +1,19 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
+const cookieParser = require('cookie-parser');
+const jwt = require('jsonwebtoken');
 
 const { connectDB } = require('./config/database');
 const { UserModel } = require('./models/user');
 const { validateSignupData } = require('./utils/validation');
+const { userAuth } = require('./middlewares/auth');
 
 const app = express();
 
 app.use(express.json());
+app.use(cookieParser());
+
+const SECRET_KEY = 'DEV@Tinder$9394';
 
 app.post('/signup', async (req, res) => {
 	try {
@@ -43,6 +49,11 @@ app.post('/login', async (req, res) => {
 		const isPasswordValid = await bcrypt.compare(password, user.password);
 
 		if (isPasswordValid) {
+			// Create JWT token
+			const jwtToken = jwt.sign({ _id: user._id }, SECRET_KEY, { expiresIn: '1h' });
+
+			// Add the token to cookie and send the response back to the user
+			res.cookie('token', jwtToken, { expires: '1h' });
 			res.send(user.firstName + ' is logged in successfully!');
 		} else {
 			throw new Error('Invalid credentials!');
@@ -52,8 +63,17 @@ app.post('/login', async (req, res) => {
 	}
 });
 
-app.patch('/user/:userId', async (req, res) => {
-	const user = req.body;
+app.get('/profile', userAuth, async (req, res) => {
+	try {
+		const user = req.user;
+		res.send(user);
+	} catch (err) {
+		res.status(400).send(err.message);
+	}
+});
+
+app.patch('/user/:userId', userAuth, async (req, res) => {
+	const newUserDetails = req.body;
 	const userId = req.params.userId;
 	const ALLOWED_UPDATES = ['firstName', 'lastName', 'age', 'gender', 'profileIconUrl', 'gallery', 'about', 'skills'];
 	const isUpdateAllowed = Object.keys(user).every((key) => ALLOWED_UPDATES.includes(key));
@@ -62,14 +82,14 @@ app.patch('/user/:userId', async (req, res) => {
 		if (!isUpdateAllowed) {
 			throw new Error('Wrong data is not allowed to update!');
 		}
-		await UserModel.findByIdAndUpdate(userId, user, { runValidators: true });
+		await UserModel.findByIdAndUpdate(userId, newUserDetails, { runValidators: true });
 		res.send('User updated successfully!');
 	} catch (err) {
 		res.status(400).send(err.message);
 	}
 });
 
-app.get('/getUser/:userId', async (req, res) => {
+app.get('/getUser/:userId', userAuth, async (req, res) => {
 	const id = req.params.userId;
 
 	try {
@@ -84,7 +104,7 @@ app.get('/getUser/:userId', async (req, res) => {
 	}
 });
 
-app.get('/getUsers', async (req, res) => {
+app.get('/getUsers', userAuth, async (req, res) => {
 	const userName = req.body.firstName;
 
 	try {
@@ -99,7 +119,7 @@ app.get('/getUsers', async (req, res) => {
 	}
 });
 
-app.get('/getAllUsers', async (req, res) => {
+app.get('/getAllUsers', userAuth, async (req, res) => {
 	try {
 		const users = await UserModel.find({});
 		res.send(users);
@@ -108,7 +128,7 @@ app.get('/getAllUsers', async (req, res) => {
 	}
 });
 
-app.delete('/user/:userId', async (req, res) => {
+app.delete('/user/:userId', userAuth, async (req, res) => {
 	const id = req.params.userId;
 
 	try {
