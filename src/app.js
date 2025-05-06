@@ -1,28 +1,35 @@
 const express = require('express');
 
+const { connectDB } = require('./config/database');
+const { UserModel } = require('./models/user');
+
 const app = express();
 
-app.post('/admin', (req, res) => {
-	// Some other logic
-	res.send('Admin data sent!');
-});
+app.post('/signup', async (req, res) => {
+	const user = new UserModel({
+		firstName: 'Deepak',
+		lastName: 'Kumar',
+		emailId: 'k.deepak9394@gmail.com',
+		password: 'devTinder@9394',
+		age: 35,
+		gender: 'male',
+	});
 
-app.post('/user/login', (req, res) => {
 	try {
-		res.send('User is logged in successfully!');
+		await user.save();
+		res.send('User added successfully!');
 	} catch (err) {
-		res.status(500).send('User is not logged in. Something went wrong!');
+		res.status(400).send('Error saving the user: ', err.message);
 	}
 });
 
-// This middleware in last of the code will work as safe guard of any kind of error that might not be handled properly anywhere in the code.
-// For example in the /admin request handler the error is not handled if may occur, because the code is not written in try catch block.
-app.use('/', (err, req, res, next) => {
-	if (err) {
-		res.status(500).send('Something went wrong!');
-	}
-});
-
-app.listen(3000, () => {
-	console.log('Server is successfully listening on port 3000');
-});
+connectDB()
+	.then(() => {
+		console.log('Database connection established...');
+		app.listen(3000, () => {
+			console.log('Server is successfully listening on port 3000');
+		});
+	})
+	.catch((err) => {
+		console.log('Database cannot be connect!!');
+	});
