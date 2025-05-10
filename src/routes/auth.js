@@ -33,7 +33,6 @@ authRouter.post('/signup', async (req, res) => {
 });
 
 authRouter.post('/login', async (req, res) => {
-	console.log('connection build');
 	try {
 		const { emailId, password } = req.body;
 
@@ -64,6 +63,13 @@ authRouter.post('/login', async (req, res) => {
 	} catch (err) {
 		res.status(400).send(err.message);
 	}
+});
+
+authRouter.post('/logout', (req, res) => {
+	res.cookie('token', null, {
+		expires: new Date(Date.now()),
+	});
+	res.send('Logged-out successfully!');
 });
 
 module.exports = authRouter;

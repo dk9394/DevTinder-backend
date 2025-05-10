@@ -19,23 +19,6 @@ app.use('/', authRouter);
 app.use('/', profileRouter);
 app.use('/', requestRouter);
 
-// app.patch('/user/:userId', userAuth, async (req, res) => {
-// 	const newUserDetails = req.body;
-// 	const userId = req.params.userId;
-// 	const ALLOWED_UPDATES = ['firstName', 'lastName', 'age', 'gender', 'profileIconUrl', 'gallery', 'about', 'skills'];
-// 	const isUpdateAllowed = Object.keys(user).every((key) => ALLOWED_UPDATES.includes(key));
-
-// 	try {
-// 		if (!isUpdateAllowed) {
-// 			throw new Error('Wrong data is not allowed to update!');
-// 		}
-// 		await UserModel.findByIdAndUpdate(userId, newUserDetails, { runValidators: true });
-// 		res.send('User updated successfully!');
-// 	} catch (err) {
-// 		res.status(400).send(err.message);
-// 	}
-// });
-
 // app.get('/getUser/:userId', userAuth, async (req, res) => {
 // 	const id = req.params.userId;
 
