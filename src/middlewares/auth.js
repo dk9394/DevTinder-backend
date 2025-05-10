@@ -1,8 +1,7 @@
 const jwt = require('jsonwebtoken');
 
 const { UserModel } = require('./../models/user');
-
-const SECRET_KEY = 'DEV@Tinder$9394';
+const { SECRET_KEY } = require('./../utils/constants');
 
 const userAuth = async (req, res, next) => {
 	try {

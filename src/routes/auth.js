@@ -2,10 +2,10 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+const { SECRET_KEY } = require('./../utils/constants');
 const { UserModel } = require('./../models/user');
 // const { validateSignupData } = require('./../utils/validation');
 
-const SECRET_KEY = 'DEV@Tinder$9394';
 const authRouter = express.Router();
 
 authRouter.post('/signup', async (req, res) => {
