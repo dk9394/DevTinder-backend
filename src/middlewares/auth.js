@@ -26,7 +26,7 @@ const userAuth = async (req, res, next) => {
 		}
 
 		// Attach user to the req object to make it available for the other request handlers
-		req.user = user;
+		req.authorizedUser = user;
 
 		next();
 	} catch (err) {
