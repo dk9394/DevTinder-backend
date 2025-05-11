@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 const { SECRET_KEY } = require('./../utils/constants');
+const { logout } = require('./../utils/commonLogic');
 const { UserModel } = require('./../models/user');
 // const { validateSignupData } = require('./../utils/validation');
 
@@ -66,9 +67,7 @@ authRouter.post('/login', async (req, res) => {
 });
 
 authRouter.post('/logout', (req, res) => {
-	res.cookie('token', null, {
-		expires: new Date(Date.now()),
-	});
+	logout(res);
 	res.send('Logged-out successfully!');
 });
 

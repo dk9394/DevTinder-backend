@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const { userAuth } = require('./../middlewares/auth');
 const { UserModel } = require('./../models/user');
 const { validateProfileEditData, validateNewPassword } = require('./../utils/validation');
+const { logout } = require('../utils/commonLogic');
 
 const profileRouter = express.Router();
 
@@ -25,7 +26,10 @@ profileRouter.patch('/profile/edit', userAuth, async (req, res) => {
 			throw new Error('Wrong data is not allowed to update!');
 		}
 
-		const userNewDetails = Object.assign({}, user, req.body);
+		let userNewDetails = user;
+		Object.keys(req.body).forEach((key) => {
+			userNewDetails[key] = req.body[key];
+		});
 
 		await UserModel.findByIdAndUpdate(user._id, userNewDetails, { runValidators: true });
 		res.send(userNewDetails.firstName + ' your profile is updated successfully!');
@@ -45,7 +49,9 @@ profileRouter.patch('/profile/updatePassword', userAuth, async (req, res) => {
 		user.password = await bcrypt.hash(req.body.password, 10);
 
 		await UserModel.findByIdAndUpdate(user._id, user, { runValidators: true });
-		res.send(user.firstName + ' your password is updated successfully!');
+
+		logout(res);
+		res.send(user.firstName + ' your password is updated successfully. Please login again!');
 	} catch (err) {
 		res.status(400).send(err.message);
 	}
