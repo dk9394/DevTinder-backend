@@ -2,9 +2,6 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 
 const { connectDB } = require('./config/database');
-const { UserModel } = require('./models/user');
-const { validateSignupData } = require('./utils/validation');
-const { userAuth } = require('./middlewares/auth');
 
 const app = express();
 
@@ -27,12 +24,12 @@ app.use('/', userRouter);
 // 	try {
 // 		const user = await UserModel.findOne({ _id: id });
 // 		if (user) {
-// 			res.send(user);
+// 		sendSuccessResponse(res, 'user', user);
 // 		} else {
 // 			res.status(404).send('User not found with matching emailId: ' + userEmailId);
 // 		}
 // 	} catch (err) {
-// 		res.status(400).send(err.message);
+// 		sendErrorResponse(res, err);
 // 	}
 // });
 
@@ -42,21 +39,21 @@ app.use('/', userRouter);
 // 	try {
 // 		const users = await UserModel.find({ firstName: userName });
 // 		if (users.length) {
-// 			res.send(users);
+// 			sendSuccessResponse(res, 'users', users);
 // 		} else {
 // 			res.status(404).send('No user found matching: ' + userName);
 // 		}
 // 	} catch (err) {
-// 		res.status(400).send(err.message);
+// 		sendErrorResponse(res, err);
 // 	}
 // });
 
 // app.get('/getAllUsers', userAuth, async (req, res) => {
 // 	try {
 // 		const users = await UserModel.find({});
-// 		res.send(users);
+// 		sendSuccessResponse(res, 'users', users);
 // 	} catch (err) {
-// 		res.status(400).send(err.message);
+// 		sendErrorResponse(res, err);
 // 	}
 // });
 
@@ -66,9 +63,9 @@ app.use('/', userRouter);
 // 	try {
 // 		// const user = await UserModel.findByIdAndDelete({ _id: id });
 // 		const user = await UserModel.findByIdAndDelete(id);
-// 		res.send('User deleted successfully!');
+// 		sendSuccessResponse(res, 'User deleted successfully!', user);
 // 	} catch (err) {
-// 		res.status(400).send(err.message);
+// 		sendErrorResponse(res, err);
 // 	}
 // });
 

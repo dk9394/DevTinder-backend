@@ -5,6 +5,7 @@ const { userAuth } = require('./../middlewares/auth');
 const { UserModel } = require('./../models/user');
 const { validateProfileEditData, validateNewPassword } = require('./../utils/validation');
 const { logout } = require('../utils/commonLogic');
+const { MyError, sendErrorResponse, sendSuccessResponse } = require('../utils/sendResponse');
 
 const profileRouter = express.Router();
 
@@ -12,9 +13,9 @@ profileRouter.get('/profile', userAuth, async (req, res) => {
 	try {
 		const user = req.authorizedUser;
 
-		res.send(user);
+		sendSuccessResponse(res, 'User found!', user);
 	} catch (err) {
-		res.status(400).send(err.message);
+		sendErrorResponse(res, err);
 	}
 });
 
@@ -23,7 +24,11 @@ profileRouter.patch('/profile/edit', userAuth, async (req, res) => {
 		const user = req.authorizedUser;
 
 		if (!validateProfileEditData(req.body)) {
-			throw new Error('Wrong data is not allowed to update!');
+			throw new MyError({
+				status: 422,
+				message: 'Wrong data is not allowed to update!',
+				userMessage: 'Wrong data is not allowed to update!',
+			});
 		}
 
 		let userNewDetails = user;
@@ -32,9 +37,9 @@ profileRouter.patch('/profile/edit', userAuth, async (req, res) => {
 		});
 
 		await UserModel.findByIdAndUpdate(user._id, userNewDetails, { runValidators: true });
-		res.send(userNewDetails.firstName + ' your profile is updated successfully!');
+		sendSuccessResponse(res, `${userNewDetails.firstName}, your profile is updated successfully!`, userNewDetails);
 	} catch (err) {
-		res.status(400).send(err.message);
+		sendErrorResponse(res, err);
 	}
 });
 
@@ -43,7 +48,11 @@ profileRouter.patch('/profile/updatePassword', userAuth, async (req, res) => {
 		const user = req.authorizedUser;
 
 		if (!validateNewPassword(req.body.password)) {
-			throw new Error('New password is not strong enough to update!');
+			throw new MyError({
+				status: 422,
+				message: 'New password is not strong enough to update!',
+				userMessage: 'New password is not strong enough to update!',
+			});
 		}
 
 		user.password = await bcrypt.hash(req.body.password, 10);
@@ -51,9 +60,9 @@ profileRouter.patch('/profile/updatePassword', userAuth, async (req, res) => {
 		await UserModel.findByIdAndUpdate(user._id, user, { runValidators: true });
 
 		logout(res);
-		res.send(user.firstName + ' your password is updated successfully. Please login again!');
+		sendSuccessResponse(res, 'Password updated successfully. Please login again!');
 	} catch (err) {
-		res.status(400).send(err.message);
+		sendErrorResponse(res, err);
 	}
 });
 

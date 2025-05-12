@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const { SECRET_KEY } = require('./../utils/constants');
 const { logout } = require('./../utils/commonLogic');
 const { UserModel } = require('./../models/user');
+const { MyError, sendErrorResponse, sendSuccessResponse } = require('../utils/sendResponse');
 // const { validateSignupData } = require('./../utils/validation');
 
 const authRouter = express.Router();
@@ -27,9 +28,9 @@ authRouter.post('/signup', async (req, res) => {
 		});
 
 		await user.save();
-		res.send('User added successfully!');
+		sendSuccessResponse(res, 'User added successfully!', user);
 	} catch (err) {
-		res.status(400).send(err.message);
+		sendErrorResponse(res, err);
 	}
 });
 
@@ -40,7 +41,11 @@ authRouter.post('/login', async (req, res) => {
 		const user = await UserModel.findOne({ emailId });
 
 		if (!user) {
-			throw new Error('Invalid credentials!');
+			throw new MyError({
+				status: 404,
+				message: 'Invalid credentials!',
+				userMessage: 'Invalid credentials!',
+			});
 		}
 
 		// You can leverage the Schema methods to validate or create JWT token kind of tasks to offload from the API request handler.
@@ -57,18 +62,22 @@ authRouter.post('/login', async (req, res) => {
 
 			// Add the token to cookie and send the response back to the user
 			res.cookie('token', jwtToken, { expires: new Date(Date.now() + 60 * 60 * 1000) });
-			res.send(user.firstName + ' is logged in successfully!');
+			sendSuccessResponse(res, `${user.firstName} is logged in successfully!`, user);
 		} else {
-			throw new Error('Invalid credentials!');
+			throw new MyError({
+				status: 404,
+				message: 'Invalid credentials!',
+				userMessage: 'Invalid credentials!',
+			});
 		}
 	} catch (err) {
-		res.status(400).send(err.message);
+		sendErrorResponse(res, err);
 	}
 });
 
 authRouter.post('/logout', (req, res) => {
 	logout(res);
-	res.send('Logged-out successfully!');
+	sendSuccessResponse(res, 'Logged-out successfully!');
 });
 
 module.exports = authRouter;

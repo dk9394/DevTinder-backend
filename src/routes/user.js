@@ -4,6 +4,7 @@ const { userAuth } = require('./../middlewares/auth');
 const ConnectionRequestModel = require('../models/connectionRequest');
 const { ALL_STATUS } = require('./../utils/constants');
 const { UserModel } = require('../models/user');
+const { sendSuccessResponse, sendErrorResponse } = require('../utils/sendResponse');
 
 const userRouter = express.Router();
 
@@ -18,9 +19,9 @@ userRouter.get('/user/requests/received', userAuth, async (req, res) => {
 			status: ALL_STATUS[1],
 		}).populate('fromUserId', REQUESTED_USERS_PROFILE_DETAILS);
 
-		res.send(connectionRequests);
+		sendSuccessResponse(res, 'Requested users list', connectionRequests);
 	} catch (err) {
-		res.status(400).send(err.message);
+		sendErrorResponse(res, err);
 	}
 });
 
@@ -32,9 +33,9 @@ userRouter.get('/user/requests/received', userAuth, async (req, res) => {
 // 			fromUserId: user._id,
 // 		}).populate('fromUserId');
 
-// 		res.send(connectionRequests);
+// 		sendSuccessResponse(res, 'Requested users list', connectionRequests);
 // 	} catch (err) {
-// 		res.status(400).send(err.message);
+// 		sendErrorResponse(res, err);
 // 	}
 // });
 
@@ -58,9 +59,9 @@ userRouter.get('/user/connections', userAuth, async (req, res) => {
 			return connection.fromUserId;
 		});
 
-		res.json({ data });
+		sendSuccessResponse(res, 'Connections list', data);
 	} catch (err) {
-		res.status(400).send(err.message);
+		sendErrorResponse(res, err);
 	}
 });
 
@@ -90,9 +91,9 @@ userRouter.get('/feeds', userAuth, async (req, res) => {
 			.skip((page - 1) * limit)
 			.limit(limit);
 
-		res.json({ data: feed });
+		sendSuccessResponse(res, 'feeds', feed);
 	} catch (err) {
-		res.status(400).send(err.message);
+		sendErrorResponse(res, err);
 	}
 });
 

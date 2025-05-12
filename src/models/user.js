@@ -3,6 +3,8 @@ const validator = require('validator');
 // const bcrypt = require('bcrypt');
 // const jwt = require('jsonwebtoken');
 
+const { MyError } = require('../utils/sendResponse');
+
 // const SECRET_KEY = 'DEV@Tinder$9394';
 
 const userSchema = mongoose.Schema(
@@ -28,7 +30,11 @@ const userSchema = mongoose.Schema(
 			trim: true,
 			validate(value) {
 				if (!validator.isEmail(value)) {
-					throw new Error('Invalid email address: ' + value);
+					throw new MyError({
+						status: 422,
+						message: 'Invalid email address!' + value,
+						userMessage: 'Invalid email address!',
+					});
 				}
 			},
 		},
@@ -37,7 +43,11 @@ const userSchema = mongoose.Schema(
 			required: true,
 			validate(value) {
 				if (!validator.isStrongPassword(value)) {
-					throw new Error('Not a strong password: ' + value);
+					throw new MyError({
+						status: 422,
+						message: 'Not a strong password: ' + value,
+						userMessage: 'Not a strong password: ' + value,
+					});
 				}
 			},
 		},
@@ -49,7 +59,11 @@ const userSchema = mongoose.Schema(
 			type: String,
 			validate(value) {
 				if (!['male', 'female', 'others'].includes(value)) {
-					throw new Error('Gender is not valid!');
+					throw new MyError({
+						status: 422,
+						message: 'Gender is not valid: ' + value,
+						userMessage: 'Gender is not valid: ' + value,
+					});
 				}
 			},
 		},
@@ -58,7 +72,11 @@ const userSchema = mongoose.Schema(
 			default: 'https://www.pngfind.com/pngs/m/665-6650067_business-man-signo-de-estudiantes-hd-png-download.png',
 			validate(value) {
 				if (!validator.isURL(value)) {
-					throw new Error('Invalid image URL: ' + value);
+					throw new MyError({
+						status: 422,
+						message: 'Invalid image URL: ' + value,
+						userMessage: 'Invalid image URL',
+					});
 				}
 			},
 		},
@@ -67,7 +85,11 @@ const userSchema = mongoose.Schema(
 			default: [],
 			validate(value) {
 				if (!value.every((val) => validator.isUrl(val))) {
-					throw new Error('One or more invalid gallery image URL');
+					throw new MyError({
+						status: 422,
+						message: 'One or more invalid image URL(s)',
+						userMessage: 'One or more invalid gallery image URL(s)',
+					});
 				}
 			},
 		},
@@ -81,7 +103,11 @@ const userSchema = mongoose.Schema(
 			type: [String],
 			validate(value) {
 				if (value.length > 10) {
-					throw new Error('More than 10 skills are not allowed!');
+					throw new MyError({
+						status: 422,
+						message: 'More than 10 skills are not allowed!',
+						userMessage: 'More than 10 skills are not allowed!',
+					});
 				}
 			},
 		},

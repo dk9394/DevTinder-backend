@@ -34,7 +34,11 @@ connectionRequestSchema.index({ fromUserId: 1, toUserId: 1 });
 // 	const connectionRequest = this;
 
 // 	if (connectionRequest.fromUserId.equals(connectionRequest.toUserId)) {
-// 		throw new Error('Connection request cannot be send to yourself!');
+// 		throw new MyError({
+// 			status: 404,
+// 			message: 'Connection request cannot be send to yourself!',
+// 			userMessage: 'Connection request cannot be send to yourself!',
+// 		});
 // 	}
 
 // 	next();
