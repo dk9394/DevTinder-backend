@@ -1,10 +1,17 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
+const cors = require('cors');
 
 const { connectDB } = require('./config/database');
 
 const app = express();
 
+app.use(
+	cors({
+		// origin: 'http://localhost:4200', // Replace with your Angular app's URL
+		// credentials: true, // Allow cookies to be sent with requests
+	})
+);
 app.use(express.json());
 app.use(cookieParser());
 

@@ -59,10 +59,12 @@ authRouter.post('/login', async (req, res) => {
 
 			// Create JWT token
 			const jwtToken = await jwt.sign({ _id: user._id }, SECRET_KEY, { expiresIn: '1h' });
-
+			const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
 			// Add the token to cookie and send the response back to the user
-			res.cookie('token', jwtToken, { expires: new Date(Date.now() + 60 * 60 * 1000) });
-			sendSuccessResponse(res, `${user.firstName} is logged in successfully!`, user);
+			res.cookie('token', jwtToken, { expires: expiresAt });
+			sendSuccessResponse(res, `${user.firstName} is logged in successfully!`, user, {
+				expiresAt: expiresAt.toISOString(),
+			});
 		} else {
 			throw new MyError({
 				status: 404,
