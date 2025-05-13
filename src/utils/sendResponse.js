@@ -22,12 +22,13 @@ const sendErrorResponse = (res, err) => {
 	}
 };
 
-const sendSuccessResponse = (res, message, data) => {
+const sendSuccessResponse = (res, message, data, options = {}) => {
 	return res.status(200).json({
 		message: message || 'Success',
 		userMessage: message || 'Success',
 		data: data,
 		status: 200,
+		...options,
 	});
 };
 
