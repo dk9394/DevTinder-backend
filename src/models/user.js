@@ -14,13 +14,14 @@ const userSchema = mongoose.Schema(
 			required: true,
 			trim: true,
 			minLength: 3,
-			maxLength: 50,
+			maxLength: 20,
 		},
 		lastName: {
 			type: String,
 			trim: true,
+			required: true,
 			minLength: 3,
-			maxLength: 50,
+			maxLength: 20,
 		},
 		emailId: {
 			type: String,
@@ -41,6 +42,8 @@ const userSchema = mongoose.Schema(
 		password: {
 			type: String,
 			required: true,
+			minLength: 6,
+			maxLength: 20,
 			validate(value) {
 				if (!validator.isStrongPassword(value)) {
 					throw new MyError({
