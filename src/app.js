@@ -8,8 +8,8 @@ const app = express();
 
 app.use(
 	cors({
-		// origin: 'http://localhost:4200', // Replace with your Angular app's URL
-		// credentials: true, // Allow cookies to be sent with requests
+		origin: 'http://localhost:4200', // Replace with your Angular app's URL
+		credentials: true, // Allow cookies to be sent with requests
 	})
 );
 app.use(express.json());
